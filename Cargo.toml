@@ -1,0 +1,15 @@
+[package]
+name = "easy_strings"
+version = "0.1.0"
+authors = ["Robert Grosse <n210241048576@gmail.com>"]
+description = "Ergonomic, garbage collected strings for Rust"
+repository = "https://github.com/Storyyeller/easy_strings"
+readme = "README.markdown"
+categories = ["data-structures"]
+license = "Apache-2.0/MIT"
+
+
+[dependencies]
+lazy_static = "0.1.*"
+owning_ref = "0.2.4"
+
