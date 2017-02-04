@@ -1,6 +1,7 @@
 [package]
 name = "easy_strings"
 version = "0.1.0"
+documentation = "https://docs.rs/easy_strings/0.1.0/easy_strings/"
 authors = ["Robert Grosse <n210241048576@gmail.com>"]
 description = "Ergonomic, garbage collected strings for Rust"
 repository = "https://github.com/Storyyeller/easy_strings"
