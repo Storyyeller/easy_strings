@@ -197,7 +197,7 @@ take_string(s.to_string());
 The contains(), starts_with(), ends_with(), find(), and rfind() methods are generic, meaning
 that you'll get a confusing compile error if you naively pass in an EZString. The easiest
 solution is to use as_str() as mentioned in the previous section. Alternatively, you can write
-&*s for EZStrings and &**s for &EZStrings. No special syntax is required to pass in a literal.
+`&*s` for EZStrings and `&**s` for &EZStrings. No special syntax is required to pass in a literal.
 
 ```rust
 let s = ez("Hello, world!");
