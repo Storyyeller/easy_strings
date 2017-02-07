@@ -301,7 +301,22 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// assert_eq!(s.splitn(2, "-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb-ccc")]);
 /// assert_eq!(s.rsplitn(2, "-").collect::<Vec<_>>(), vec![ez("ccc"), ez("aaa-bbb")]);
 /// ```
-/// Although the iterators are lazy, they hold a reference to the copy of the string at time of
+/// split_terminators() and rsplit_terminators are the same as split/rsplit except that
+/// if the final substring is empty, it is skipped. This is useful if the string is
+/// terminated, rather than seperated, by a seperator.
+///
+/// ```
+/// # use easy_strings::*;
+/// let s = ez("aaa-bbb-");
+/// assert_eq!(s.split("-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb"),  ez("")]);
+/// assert_eq!(s.split_terminator("-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb")]);
+/// assert_eq!(s.rsplit_terminator("-").collect::<Vec<_>>(), vec![ez("bbb"), ez("aaa")]);
+///
+/// let s = ez("aaa-bbb");
+/// assert_eq!(s.split("-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb")]);
+/// assert_eq!(s.split_terminator("-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb")]);
+/// ```
+/// Although the iterators are lazy, they hold a reference to a copy of the string at time of
 /// creation. Therefore, if you later modify the string, the iteration results don't change.
 ///
 /// ```
