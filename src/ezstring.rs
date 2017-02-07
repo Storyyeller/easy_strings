@@ -371,6 +371,15 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// assert_eq!(s, " x xhello");
 /// assert_eq!(s.trim_left_matches(" x"), "hello");
 /// ```
+/// # String replacement
+/// You can replace one substring with another via .replace().
+///
+/// ```
+/// # use easy_strings::*;
+/// let s = ez("one fish two fish, old fish, new fish");
+/// assert_eq!(s.replace("fish", "bush"), "one bush two bush, old bush, new bush");
+/// assert_eq!(s.replace(&ez("fish"), &ez("bush")), "one bush two bush, old bush, new bush");
+/// ```
 /// # Other methods
 /// to_lowercase(), to_uppercase(), and repeat() are pretty much self explanatory.
 ///
