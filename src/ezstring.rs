@@ -301,7 +301,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// assert_eq!(s.splitn(2, "-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb-ccc")]);
 /// assert_eq!(s.rsplitn(2, "-").collect::<Vec<_>>(), vec![ez("ccc"), ez("aaa-bbb")]);
 /// ```
-/// split_terminators() and rsplit_terminators are the same as split/rsplit except that
+/// split_terminator() and rsplit_terminator() are the same as split()/rsplit() except that
 /// if the final substring is empty, it is skipped. This is useful if the string is
 /// terminated, rather than seperated, by a seperator.
 ///
@@ -560,15 +560,19 @@ impl EZString {
     pub fn bytes(&self) -> Bytes { self.wrapped_iter(|s| s.bytes()) }
     /// Split a string by whitespace.
     ///
-    /// The iterator returned will return strings that are sub-slices of
-    /// the original string, separated by any amount of whitespace.
-    ///
     /// 'Whitespace' is defined according to the terms of the Unicode Derived
     /// Core Property `White_Space`.
     ///
     /// This iterator is double ended.
+    ///
+    /// ```
+    /// # use easy_strings::*;
+    /// let s = ez(" Hello,   world!\nLine two. ");
+    /// assert_eq!(s.split_whitespace().collect::<Vec<_>>(),
+    ///            vec![ez("Hello,"), ez("world!"), ez("Line"), ez("two.")]);
+    /// ```
     pub fn split_whitespace(&self) -> SplitWhitespace { self.wrapped_iter(|s| s.split_whitespace()) }
-    /// An iterator over the lines of a string, as strings.
+    /// An iterator over the lines of a string.
     ///
     /// Lines are ended with either a newline (`\n`) or a carriage return with
     /// a line feed (`\r\n`).
@@ -576,141 +580,174 @@ impl EZString {
     /// The final line ending is optional.
     ///
     /// This iterator is double ended.
+    ///
+    /// ```
+    /// # use easy_strings::*;
+    /// let s = ez(" Hello,   world!\nLine two. ");
+    /// assert_eq!(s.lines().collect::<Vec<_>>(), vec![ez(" Hello,   world!"), ez("Line two. ")]);
+    /// ```
     pub fn lines(&self) -> Lines { self.wrapped_iter(|s| s.lines()) }
 
-    /// An iterator over substrings of this string, separated by
-    /// characters matched by a pattern.
+    /// Split a string by substring
+    ///
+    /// ```
+    /// # use easy_strings::*;
+    /// let s = ez("aaa-bbb-ccc");
+    /// assert_eq!(s.split("-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb"), ez("ccc")]);
+    /// ```
     pub fn split(&self, p: &str) -> Split { self.wrapped_iter(|s| pattern_iter(p, |p| s.split(p))) }
-    /// An iterator over substrings of the given string, separated by
-    /// characters matched by a pattern and yielded in reverse order.
+    /// Split a string by substring and return results in reverse order.
+    ///
+    /// ```
+    /// # use easy_strings::*;
+    /// let s = ez("aaa-bbb-ccc");
+    /// assert_eq!(s.rsplit("-").collect::<Vec<_>>(), vec![ez("ccc"), ez("bbb"), ez("aaa")]);
+    /// ```
+
     pub fn rsplit(&self, p: &str) -> RSplit { self.wrapped_iter(|s| pattern_iter(p, |p| s.rsplit(p))) }
-    /// An iterator over substrings of the given string, separated by
-    /// characters matched by a pattern.
+    /// split_terminator() is the same as split() except that
+    /// if the final substring is empty, it is skipped. This is useful if the string is
+    /// terminated, rather than seperated, by a seperator.
     ///
-    /// The pattern can be a `&str`, char, or a closure that determines the
-    /// split.
+    /// ```
+    /// # use easy_strings::*;
+    /// let s = ez("aaa-bbb-");
+    /// assert_eq!(s.split("-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb"),  ez("")]);
+    /// assert_eq!(s.split_terminator("-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb")]);
     ///
-    /// Equivalent to [`split()`], except that the trailing substring
-    /// is skipped if empty.
-    ///
-    /// [`split()`]: #method.split
-    ///
-    /// This method can be used for string data that is _terminated_,
-    /// rather than _separated_ by a pattern.
+    /// let s = ez("aaa-bbb");
+    /// assert_eq!(s.split("-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb")]);
+    /// assert_eq!(s.split_terminator("-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb")]);
+    /// ```
     pub fn split_terminator(&self, p: &str) -> SplitTerminator { self.wrapped_iter(|s| pattern_iter(p, |p| s.split_terminator(p))) }
-    /// An iterator over substrings of `self`, separated by characters
-    /// matched by a pattern and yielded in reverse order.
+    /// Same as split_terminator, except it returns the results in reverse order.
     ///
-    /// The pattern can be a simple `&str`, char, or a closure that
-    /// determines the split.
-    /// Additional libraries might provide more complex patterns like
-    /// regular expressions.
-    ///
-    /// Equivalent to [`split()`], except that the trailing substring is
-    /// skipped if empty.
-    ///
-    /// [`split()`]: #method.split
-    ///
-    /// This method can be used for string data that is _terminated_,
-    /// rather than _separated_ by a pattern.
+    /// ```
+    /// # use easy_strings::*;
+    /// let s = ez("aaa-bbb-");
+    /// assert_eq!(s.rsplit_terminator("-").collect::<Vec<_>>(), vec![ez("bbb"), ez("aaa")]);
+    /// ```
     pub fn rsplit_terminator(&self, p: &str) -> RSplitTerminator { self.wrapped_iter(|s| pattern_iter(p, |p| s.rsplit_terminator(p))) }
-    /// An iterator over substrings of the given string, separated by a
-    /// pattern, restricted to returning at most `n` items.
+    /// Split a string by substring, up to n-1 times (returning up to n results).
     ///
-    /// If `n` substrings are returned, the last substring (the `n`th substring)
-    /// will contain the remainder of the string.
+    /// ```
+    /// # use easy_strings::*;
+    /// let s = ez("aaa-bbb-ccc");
+    /// assert_eq!(s.splitn(2, "-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb-ccc")]);
+    /// ```
     pub fn splitn(&self, n: usize, p: &str) -> SplitN { self.wrapped_iter(|s| pattern_iter(p, |p| s.splitn(n, p))) }
-    /// An iterator over substrings of this string, separated by a
-    /// pattern, starting from the end of the string, restricted to returning
-    /// at most `n` items.
+    /// Split a string by substring starting from the end, up to n-1 times (returning up to n results).
     ///
-    /// If `n` substrings are returned, the last substring (the `n`th substring)
-    /// will contain the remainder of the string.
+    /// ```
+    /// # use easy_strings::*;
+    /// let s = ez("aaa-bbb-ccc");
+    /// assert_eq!(s.rsplitn(2, "-").collect::<Vec<_>>(), vec![ez("ccc"), ez("aaa-bbb")]);
+    /// ```
     pub fn rsplitn(&self, n: usize, p: &str) -> RSplitN { self.wrapped_iter(|s| pattern_iter(p, |p| s.rsplitn(n, p))) }
 
     /// Returns a string with leading and trailing whitespace removed.
     ///
     /// 'Whitespace' is defined according to the terms of the Unicode Derived
     /// Core Property `White_Space`.
+    ///
+    /// ```
+    /// # use easy_strings::*;
+    /// assert_eq!(ez("  hello \n ").trim(), "hello");
+    /// ```
     pub fn trim(&self) -> Self { self.from_slice(self.0.trim()) }
     /// Returns a string with leading whitespace removed.
     ///
     /// 'Whitespace' is defined according to the terms of the Unicode Derived
     /// Core Property `White_Space`.
     ///
-    /// # Text directionality
-    ///
-    /// A string is a sequence of bytes. 'Left' in this context means the first
-    /// position of that byte string; for a language like Arabic or Hebrew
-    /// which are 'right to left' rather than 'left to right', this will be
-    /// the _right_ side, not the left.
+    /// ```
+    /// # use easy_strings::*;
+    /// assert_eq!(ez("  hello \n ").trim_left(), "hello \n ");
+    /// ```
     pub fn trim_left(&self) -> Self { self.from_slice(self.0.trim_left()) }
     /// Returns a string with trailing whitespace removed.
     ///
     /// 'Whitespace' is defined according to the terms of the Unicode Derived
     /// Core Property `White_Space`.
     ///
-    /// # Text directionality
-    ///
-    /// A string is a sequence of bytes. 'Right' in this context means the last
-    /// position of that byte string; for a language like Arabic or Hebrew
-    /// which are 'right to left' rather than 'left to right', this will be
-    /// the _left_ side, not the right.
+    /// ```
+    /// # use easy_strings::*;
+    /// assert_eq!(ez("  hello \n ").trim_right(), "  hello");
+    /// ```
     pub fn trim_right(&self) -> Self { self.from_slice(self.0.trim_right()) }
 
-    /// Returns a string with all prefixes and suffixes that match a
-    /// pattern repeatedly removed.
+    /// Returns a string with all instances of a given character removed from the beginning and end.
     ///
-    /// The pattern can be a char or a closure that determines if a
-    /// character matches.
-    ///
-    /// char: primitive.char.html
+    /// ```
+    /// # use easy_strings::*;
+    /// assert_eq!(ez("  hello   ").trim_matches(' '), "hello");
+    /// ```
     pub fn trim_matches(&self, p: char) -> Self { self.from_slice(self.0.trim_matches(p)) }
-    /// Returns a string with all prefixes that match a pattern
-    /// repeatedly removed.
+    /// Trim matches of a given substring from the beginning of
+    /// the string. Note that unlike Python, it does not take a set of characters to trim, but a substring.
+    /// Note that this differs from trim_matches(), which takes a char.
     ///
-    /// The pattern can be a `&str`, char, or a closure that determines if
-    /// a character matches.
-    ///
-    /// # Text directionality
-    ///
-    /// A string is a sequence of bytes. 'Left' in this context means the first
-    /// position of that byte string; for a language like Arabic or Hebrew
-    /// which are 'right to left' rather than 'left to right', this will be
-    /// the _right_ side, not the left.
+    /// ```
+    /// # use easy_strings::*;
+    /// let s = ez(" x xhello x x x").trim_right_matches(" x");
+    /// assert_eq!(s, " x xhello");
+    /// assert_eq!(s.trim_left_matches(" x"), "hello");
+    /// ```
     pub fn trim_left_matches(&self, p: &str) -> Self { self.from_slice(self.0.trim_left_matches(p)) }
-    /// Returns a string with all suffixes that match a pattern
-    /// repeatedly removed.
+    /// Trim matches of a given substring from the end of
+    /// the string. Note that unlike Python, it does not take a set of characters to trim, but a substring.
+    /// Note that this differs from trim_matches(), which takes a char.
     ///
-    /// The pattern can be a `&str`, char, or a closure that
-    /// determines if a character matches.
-    ///
-    /// # Text directionality
-    ///
-    /// A string is a sequence of bytes. 'Right' in this context means the last
-    /// position of that byte string; for a language like Arabic or Hebrew
-    /// which are 'right to left' rather than 'left to right', this will be
-    /// the _left_ side, not the right.
+    /// ```
+    /// # use easy_strings::*;
+    /// let s = ez(" x xhello x x x").trim_right_matches(" x");
+    /// assert_eq!(s, " x xhello");
+    /// assert_eq!(s.trim_left_matches(" x"), "hello");
+    /// ```
     pub fn trim_right_matches(&self, p: &str) -> Self { self.from_slice(self.0.trim_right_matches(p)) }
 
-    /// Replaces all matches of a pattern with another string.
+    /// Replaces all matches of a string with another string.
     ///
-    /// `replace` creates a new [`String`], and copies the data from this string into it.
-    /// While doing so, it attempts to find matches of a pattern. If it finds any, it
-    /// replaces them with the replacement string.
+    /// ```
+    /// # use easy_strings::*;
+    /// let s = ez("one fish two fish, old fish, new fish");
+    /// assert_eq!(s.replace("fish", "bush"), "one bush two bush, old bush, new bush");
+    /// assert_eq!(s.replace(&ez("fish"), &ez("bush")), "one bush two bush, old bush, new bush");
+    /// ```
     pub fn replace(&self, from: &str, to: &str) -> Self { Self::from(self.0.replace(from, to)) }
     /// Returns the lowercase equivalent of this string.
     ///
     /// 'Lowercase' is defined according to the terms of the Unicode Derived Core Property
     /// `Lowercase`.
+    ///
+    /// ```
+    /// # use easy_strings::*;
+    /// let s = ez("Hello, World!");
+    /// assert_eq!(s.to_lowercase(), "hello, world!");
+    ///
+    /// let s = ez("ὈΔΥΣΣΕΎΣ");
+    /// assert_eq!(s.to_lowercase(), "ὀδυσσεύς");
+    /// ```
     pub fn to_lowercase(&self) -> Self { Self::from(self.0.to_lowercase()) }
     /// Returns the uppercase equivalent of this string.
     ///
     /// 'Uppercase' is defined according to the terms of the Unicode Derived Core Property
     /// `Uppercase`.
+    ///
+    /// ```
+    /// # use easy_strings::*;
+    /// let s = ez("Hello, World!");
+    /// assert_eq!(s.to_uppercase(), "HELLO, WORLD!");
+    /// ```
     pub fn to_uppercase(&self) -> Self { Self::from(self.0.to_uppercase()) }
 
     /// Create a new string by repeating a string `n` times.
+    ///
+    /// ```
+    /// # use easy_strings::*;
+    /// let s = ez("Hello, World!");
+    /// assert_eq!(s.repeat(3), "Hello, World!Hello, World!Hello, World!");
+    /// ```
     pub fn repeat(&self, n: usize) -> Self {
         match n {
             0 => Self::default(),
