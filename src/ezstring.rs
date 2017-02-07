@@ -55,7 +55,6 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// interned string table each time.)
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
 /// use easy_strings::{ez};
 /// let s = ez("Hello, world!");
 /// ```
@@ -63,7 +62,6 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// You can also create EZString from existing Strings or &strs.
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
 /// use easy_strings::{EZString};
 /// let s = EZString::from("foo");
 /// let s = EZString::from("foo".to_string());
@@ -74,8 +72,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// an EZString or &EZString.
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{EZString, ez};
+/// # use easy_strings::*;
 /// let e = ez("E");
 /// let re = &e;
 /// let s = "s".to_string();
@@ -97,8 +94,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// or &EZString.
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{EZString, ez};
+/// # use easy_strings::*;
 /// # let e = ez("E");
 /// # let re = &e;
 /// # let s = "s".to_string();
@@ -113,8 +109,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// need for a seperate StringBuilder type like there is in Java.
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{EZString, ez};
+/// # use easy_strings::*;
 /// let mut s = ez("Some numbers: ");
 /// for i in 0..5 {
 ///     s += &i.to_string();
@@ -144,8 +139,8 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// about lifetimes, which easy_strings was designed to avoid.
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{ez, EZString};
+/// # #![allow(unused_mut)]
+/// # use easy_strings::*;
 /// # let mut a = ez("Hello, world!");
 /// let b = &a[1..3];
 /// assert_eq!(b, "el");
@@ -158,8 +153,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// prefix it with * (or ** for &EZString).
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{ez, EZString};
+/// # use easy_strings::*;
 /// let e = ez("AAA");
 /// let er = &e;
 /// let s = String::from("AAA");
@@ -190,8 +184,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// requiring clone()s everywhere. EZString's own methods, such as trim() here, already do this.
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{ez, EZString};
+/// # use easy_strings::*;
 /// // bad: requires caller to clone() argument
 /// fn foo(s: EZString) -> EZString { s.trim() }
 /// // good
@@ -206,8 +199,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// instead in this case).
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{ez, EZString};
+/// # use easy_strings::*;
 /// let mut v: Vec<EZString> = Vec::new();
 /// let s = ez("foo");
 /// let rs = &s;
@@ -225,8 +217,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// &str, so in most cases, you can pass &s in and it will just work,
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{ez, EZString};
+/// # use easy_strings::*;
 /// fn take_str(_: &str) {}
 /// let s = ez("");
 /// let rs = &s;
@@ -238,8 +229,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// can explicitly get a &str via as_str().
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{ez, EZString};
+/// # use easy_strings::*;
 /// # fn take_str(_: &str) {}
 /// # let s = ez("");
 /// # let rs = &s;
@@ -249,8 +239,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// If a function requires an owned String, you can use the to_string() method.
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{ez, EZString};
+/// # use easy_strings::*;
 /// fn take_string(_: String) {}
 /// # let s = ez("");
 /// take_string(s.to_string());
@@ -262,8 +251,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// &*s for EZStrings and &**s for &EZStrings. No special syntax is required to pass in a literal.
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{ez, EZString};
+/// # use easy_strings::*;
 /// let s = ez("Hello, world!");
 ///
 /// assert!(s.contains("o, wo"));
@@ -285,8 +273,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// which throws if the substring isn't present, just call unwrap() on the result.
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{ez, EZString};
+/// # use easy_strings::*;
 /// # let s = ez("Hello, world!");
 /// assert_eq!(s.find("ld").unwrap(), 10);
 /// ```
@@ -295,8 +282,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// the results in new EZStrings.
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{ez, EZString};
+/// # use easy_strings::*;
 /// let s = ez(" Hello,   world!\nLine two. ");
 ///
 /// assert_eq!(s.lines().collect::<Vec<_>>(), vec![ez(" Hello,   world!"), ez("Line two. ")]);
@@ -310,8 +296,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// You can also limit the number of splits via splitn().
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{ez, EZString};
+/// # use easy_strings::*;
 /// let s = ez("aaa-bbb-ccc");
 /// assert_eq!(s.splitn(2, "-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb-ccc")]);
 /// assert_eq!(s.rsplitn(2, "-").collect::<Vec<_>>(), vec![ez("ccc"), ez("aaa-bbb")]);
@@ -320,8 +305,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// creation. Therefore, if you later modify the string, the iteration results don't change.
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{ez, EZString};
+/// # use easy_strings::*;
 /// let mut s = ez("aaa-bbb-ccc");
 /// let it = s.split("-");
 /// s += &"-ddd";
@@ -341,8 +325,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// list of strings.
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{ez, EZString};
+/// # use easy_strings::*;
 /// fn split<'a, P: Into<Option<&'a str>>>(s: &EZString, sep: P) -> Vec<EZString> {
 ///     match sep.into() {
 ///         Some(sep) => s.split(sep).collect(),
@@ -370,8 +353,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// The trim(), trim_left(), and trim_right() methods trim whitespace from the ends of the string.
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{ez, EZString};
+/// # use easy_strings::*;
 /// assert_eq!(ez("  hello \n ").trim(), "hello");
 /// let s = ez("  hello \n ").trim_right();
 /// assert_eq!(s, "  hello");
@@ -383,8 +365,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// a substring.
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{ez, EZString};
+/// # use easy_strings::*;
 /// assert_eq!(ez("  hello   ").trim_matches(' '), "hello");
 /// let s = ez(" x xhello x x x").trim_right_matches(" x");
 /// assert_eq!(s, " x xhello");
@@ -394,13 +375,21 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// to_lowercase(), to_uppercase(), and repeat() are pretty much self explanatory.
 ///
 /// ```
-/// # #![allow(unused_mut, unused_import)]
-/// # use easy_strings::{ez, EZString};
+/// # use easy_strings::*;
 /// let s = ez("Hello, World!");
 /// assert_eq!(s.to_lowercase(), "hello, world!");
 /// assert_eq!(s.to_uppercase(), "HELLO, WORLD!");
 /// assert_eq!(s.repeat(3), "Hello, World!Hello, World!Hello, World!");
 /// ```
+/// Note that to_lowercase and to_uppercase are Unicode aware, but locale independent.
+/// i.e. there is no way to get Turkish capitalization for 'i'.
+///
+/// ```
+/// # use easy_strings::*;
+/// let s = ez("ὈΔΥΣΣΕΎΣ");
+/// assert_eq!(s.to_lowercase(), "ὀδυσσεύς");
+/// ```
+///
 /// # Pointer equality
 /// The == operator tests for _value_ equality, that is whether the given strings contain the same
 /// bytes. If you want to test whether two EZStrings share the same underlying buffer, you can use the
