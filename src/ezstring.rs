@@ -784,7 +784,7 @@ impl<'a> From<&'a str> for EZString {
 
 impl<'a, 'b> Add<&'a str> for &'b EZString {
     type Output = EZString;
-    fn add(self, other: &str) -> Self::Output { Self::Output::from((*self.0).clone() + other) }
+    fn add(self, other: &str) -> Self::Output { EZString::from(self.to_string() + other) }
 }
 impl<'a, 'b, 'c> Add<&'a str> for &'c &'b EZString {
     type Output = EZString;
@@ -793,7 +793,7 @@ impl<'a, 'b, 'c> Add<&'a str> for &'c &'b EZString {
 
 impl<'a, 'b> Add<&'a EZString> for &'b String {
     type Output = EZString;
-    fn add(self, other: &EZString) -> Self::Output { Self::Output::from(self.clone()) + other }
+    fn add(self, other: &EZString) -> Self::Output { EZString::from(self.clone()) + other }
 }
 impl<'a, 'b, 'c> Add<&'a EZString> for &'c &'b String {
     type Output = EZString;
@@ -801,7 +801,7 @@ impl<'a, 'b, 'c> Add<&'a EZString> for &'c &'b String {
 }
 impl<'a, 'b, 'c> Add<&'a EZString> for &'c &'b str {
     type Output = EZString;
-    fn add(self, other: &EZString) -> Self::Output { Self::Output::from(*self) + other }
+    fn add(self, other: &EZString) -> Self::Output { EZString::from(*self) + other }
 }
 
 impl<'a> Add<&'a str> for EZString {
