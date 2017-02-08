@@ -19,7 +19,7 @@ extern crate easy_strings;
 use easy_strings::{EZString, ez};
 ```
 
-# String Creation
+# Creation
 The most common way to create an EZString is from a string literal, using the ez() helper
 function. This interns the string so that calling it multiple times with the same string literal
 won't result in multiple copies or allocations. (It still requires locking and querying the
@@ -245,7 +245,21 @@ let s = ez("aaa-bbb-ccc");
 assert_eq!(s.splitn(2, "-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb-ccc")]);
 assert_eq!(s.rsplitn(2, "-").collect::<Vec<_>>(), vec![ez("ccc"), ez("aaa-bbb")]);
 ```
-Although the iterators are lazy, they hold a reference to the copy of the string at time of
+split_terminator() and rsplit_terminator() are the same as split()/rsplit() except that
+if the final substring is empty, it is skipped. This is useful if the string is
+terminated, rather than seperated, by a seperator.
+
+```rust
+let s = ez("aaa-bbb-");
+assert_eq!(s.split("-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb"),  ez("")]);
+assert_eq!(s.split_terminator("-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb")]);
+assert_eq!(s.rsplit_terminator("-").collect::<Vec<_>>(), vec![ez("bbb"), ez("aaa")]);
+
+let s = ez("aaa-bbb");
+assert_eq!(s.split("-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb")]);
+assert_eq!(s.split_terminator("-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb")]);
+```
+Although the iterators are lazy, they hold a reference to a copy of the string at time of
 creation. Therefore, if you later modify the string, the iteration results don't change.
 
 ```rust
@@ -309,6 +323,14 @@ let s = ez(" x xhello x x x").trim_right_matches(" x");
 assert_eq!(s, " x xhello");
 assert_eq!(s.trim_left_matches(" x"), "hello");
 ```
+# String replacement
+You can replace one substring with another via .replace().
+
+```rust
+let s = ez("one fish two fish, old fish, new fish");
+assert_eq!(s.replace("fish", "bush"), "one bush two bush, old bush, new bush");
+assert_eq!(s.replace(&ez("fish"), &ez("bush")), "one bush two bush, old bush, new bush");
+```
 # Other methods
 to_lowercase(), to_uppercase(), and repeat() are pretty much self explanatory.
 
@@ -318,6 +340,14 @@ assert_eq!(s.to_lowercase(), "hello, world!");
 assert_eq!(s.to_uppercase(), "HELLO, WORLD!");
 assert_eq!(s.repeat(3), "Hello, World!Hello, World!Hello, World!");
 ```
+Note that to_lowercase and to_uppercase are Unicode aware, but locale independent.
+i.e. there is no way to get Turkish capitalization for 'i'.
+
+```rust
+let s = ez("ὈΔΥΣΣΕΎΣ");
+assert_eq!(s.to_lowercase(), "ὀδυσσεύς");
+```
+
 # Pointer equality
 The == operator tests for _value_ equality, that is whether the given strings contain the same
 bytes. If you want to test whether two EZStrings share the same underlying buffer, you can use the

@@ -54,14 +54,14 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// won't result in multiple copies or allocations. (It still requires locking and querying the
 /// interned string table each time.)
 ///
-/// ```
+/// ```rust
 /// use easy_strings::{ez};
 /// let s = ez("Hello, world!");
 /// ```
 ///
 /// You can also create EZString from existing Strings or &strs.
 ///
-/// ```
+/// ```rust
 /// use easy_strings::{EZString};
 /// let s = EZString::from("foo");
 /// let s = EZString::from("foo".to_string());
@@ -71,7 +71,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// whether they are EZString, &EZString, String, &String, or &str, as long as either a or b is
 /// an EZString or &EZString.
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// let e = ez("E");
 /// let re = &e;
@@ -93,7 +93,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// You can also concatenate multiple strings this way, as long as at least one of the first two is EZString
 /// or &EZString.
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// # let e = ez("E");
 /// # let re = &e;
@@ -108,7 +108,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// uniquely owned. This means that the following loop is O(n) rather than O(n^2 ) and there is no
 /// need for a seperate StringBuilder type like there is in Java.
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// let mut s = ez("Some numbers: ");
 /// for i in 0..5 {
@@ -122,7 +122,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// Slicing is done via the substr() method. Note that the indices are by byte, not code point. If
 /// the provided indices are not on a code point boundary, substr() will panic.
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::{ez};
 /// let mut a = ez("Hello, world!");
 /// assert_eq!(a.substr(1..), "ello, world!");
@@ -138,7 +138,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// can use []. This avoids the extra copy and allocation, at the expense of forcing you to worry
 /// about lifetimes, which easy_strings was designed to avoid.
 ///
-/// ```
+/// ```rust
 /// # #![allow(unused_mut)]
 /// # use easy_strings::*;
 /// # let mut a = ez("Hello, world!");
@@ -152,7 +152,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// a String or &str, the EZString should be on the left. If it is on the right, you'll have to
 /// prefix it with * (or ** for &EZString).
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// let e = ez("AAA");
 /// let er = &e;
@@ -183,7 +183,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// reference and return owned EZStrings. This provides maximum flexibility to the caller and avoids
 /// requiring clone()s everywhere. EZString's own methods, such as trim() here, already do this.
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// // bad: requires caller to clone() argument
 /// fn foo(s: EZString) -> EZString { s.trim() }
@@ -198,7 +198,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// underlying EZString, even if you call it on nested references (clone() clones the reference
 /// instead in this case).
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// let mut v: Vec<EZString> = Vec::new();
 /// let s = ez("foo");
@@ -216,7 +216,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// Most libraries operate on Strings and &strs, rather than EZStrings. Luckily, EZString Derefs to
 /// &str, so in most cases, you can pass &s in and it will just work,
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// fn take_str(_: &str) {}
 /// let s = ez("");
@@ -228,7 +228,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// In complicated cases, such as with generic functions, inference may not work. In that case, you
 /// can explicitly get a &str via as_str().
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// # fn take_str(_: &str) {}
 /// # let s = ez("");
@@ -238,7 +238,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// ```
 /// If a function requires an owned String, you can use the to_string() method.
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// fn take_string(_: String) {}
 /// # let s = ez("");
@@ -248,9 +248,9 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// The contains(), starts_with(), ends_with(), find(), and rfind() methods are generic, meaning
 /// that you'll get a confusing compile error if you naively pass in an EZString. The easiest
 /// solution is to use as_str() as mentioned in the previous section. Alternatively, you can write
-/// &*s for EZStrings and &**s for &EZStrings. No special syntax is required to pass in a literal.
+/// `&*s` for EZStrings and `&**s` for &EZStrings. No special syntax is required to pass in a literal.
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// let s = ez("Hello, world!");
 ///
@@ -272,7 +272,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// Note that find() and rfind() return an Option. To get behavior similar to Python's str.index(),
 /// which throws if the substring isn't present, just call unwrap() on the result.
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// # let s = ez("Hello, world!");
 /// assert_eq!(s.find("ld").unwrap(), 10);
@@ -281,7 +281,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// You can split by newlines, whitespace, or a provided substring. The returned iterators wrap
 /// the results in new EZStrings.
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// let s = ez(" Hello,   world!\nLine two. ");
 ///
@@ -295,7 +295,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// ```
 /// You can also limit the number of splits via splitn().
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// let s = ez("aaa-bbb-ccc");
 /// assert_eq!(s.splitn(2, "-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb-ccc")]);
@@ -305,7 +305,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// if the final substring is empty, it is skipped. This is useful if the string is
 /// terminated, rather than seperated, by a seperator.
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// let s = ez("aaa-bbb-");
 /// assert_eq!(s.split("-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb"),  ez("")]);
@@ -319,7 +319,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// Although the iterators are lazy, they hold a reference to a copy of the string at time of
 /// creation. Therefore, if you later modify the string, the iteration results don't change.
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// let mut s = ez("aaa-bbb-ccc");
 /// let it = s.split("-");
@@ -339,7 +339,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// and return a
 /// list of strings.
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// fn split<'a, P: Into<Option<&'a str>>>(s: &EZString, sep: P) -> Vec<EZString> {
 ///     match sep.into() {
@@ -354,7 +354,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// ```
 /// Alternatively, you can box the iterators, thus preserving the laziness.
 ///
-/// ```
+/// ```rust
 /// # #![allow(unused_mut, unused_import)]
 /// # use easy_strings::{ez, EZString};
 /// fn split<'a, P: Into<Option<&'a str>>>(s: &EZString, sep: P) -> Box<Iterator<Item=EZString>> {
@@ -367,7 +367,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// # Trimming
 /// The trim(), trim_left(), and trim_right() methods trim whitespace from the ends of the string.
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// assert_eq!(ez("  hello \n ").trim(), "hello");
 /// let s = ez("  hello \n ").trim_right();
@@ -379,7 +379,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// Note that trim_matches() is different from all of the other methods. It takes a char rather than
 /// a substring.
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// assert_eq!(ez("  hello   ").trim_matches(' '), "hello");
 /// let s = ez(" x xhello x x x").trim_right_matches(" x");
@@ -389,7 +389,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// # String replacement
 /// You can replace one substring with another via .replace().
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// let s = ez("one fish two fish, old fish, new fish");
 /// assert_eq!(s.replace("fish", "bush"), "one bush two bush, old bush, new bush");
@@ -398,7 +398,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// # Other methods
 /// to_lowercase(), to_uppercase(), and repeat() are pretty much self explanatory.
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// let s = ez("Hello, World!");
 /// assert_eq!(s.to_lowercase(), "hello, world!");
@@ -408,7 +408,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// Note that to_lowercase and to_uppercase are Unicode aware, but locale independent.
 /// i.e. there is no way to get Turkish capitalization for 'i'.
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::*;
 /// let s = ez("ὈΔΥΣΣΕΎΣ");
 /// assert_eq!(s.to_lowercase(), "ὀδυσσεύς");
@@ -420,7 +420,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// ptr_eq() method. Note that since EZString is copy-on-write, there is no observeable effect of
 /// sharing buffers, apart from reduced memory usage. Therefore, this method is rarely useful.
 ///
-/// ```
+/// ```rust
 /// # use easy_strings::{ez};
 /// let a = ez("xxx");
 /// let mut b = a.clone();
