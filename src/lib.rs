@@ -33,5 +33,3 @@ pub fn ez(lit: &'static str) -> EZString {
     let mut map = STATIC_STRINGS.lock().unwrap();
     map.entry(lit).or_insert_with(|| EZString::from(lit)).clone()
 }
-
-

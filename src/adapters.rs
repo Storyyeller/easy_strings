@@ -13,10 +13,14 @@ use self::owning_ref::{OwningHandle, StableAddress};
 struct DerefNewtype<T>(T);
 impl<T> Deref for DerefNewtype<T> {
     type Target = T;
-    fn deref(&self) -> &Self::Target { &self.0 }
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
 }
 impl<T> DerefMut for DerefNewtype<T> {
-    fn deref_mut(&mut self) -> &mut Self::Target { &mut self.0 }
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
 }
 // impl<T: Clone> Clone for DerefNewtype<T> { fn clone(&self) -> Self { DerefNewtype(self.0.clone()) } }
 
@@ -28,14 +32,20 @@ impl<S: StableAddress + 'static, T> OwnedIter<S, T> {
         OwnedIter(OwningHandle::new(o, |ptr| DerefNewtype(f(&*ptr))))
     }
 
-    pub fn wrapped(self) -> WrappedIter<S, T> { WrappedIter(self) }
+    pub fn wrapped(self) -> WrappedIter<S, T> {
+        WrappedIter(self)
+    }
 }
 impl<S: StableAddress, T: Iterator> Iterator for OwnedIter<S, T> {
     type Item = T::Item;
-    fn next(&mut self) -> Option<Self::Item> { self.0.next() }
+    fn next(&mut self) -> Option<Self::Item> {
+        self.0.next()
+    }
 }
 impl<S: StableAddress, T: DoubleEndedIterator> DoubleEndedIterator for OwnedIter<S, T> {
-    fn next_back(&mut self) -> Option<Self::Item> { self.0.next_back() }
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.0.next_back()
+    }
 }
 
 
@@ -48,28 +58,35 @@ impl<S: StableAddress, T: Iterator> Iterator for WrappedIter<S, T>
     where T::Item: Wrappable
 {
     type Item = <T::Item as Wrappable>::Target;
-    fn next(&mut self) -> Option<Self::Item> { self.0.next().map(|s| s.wrap()) }
+    fn next(&mut self) -> Option<Self::Item> {
+        self.0.next().map(|s| s.wrap())
+    }
 }
 impl<S: StableAddress, T: DoubleEndedIterator> DoubleEndedIterator for WrappedIter<S, T>
     where T::Item: Wrappable
 {
-    fn next_back(&mut self) -> Option<Self::Item> { self.0.next_back().map(|s| s.wrap()) }
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.0.next_back().map(|s| s.wrap())
+    }
 }
 
 
 
 impl Wrappable for char {
     type Target = Self;
-    fn wrap(self) -> Self::Target { self }
+    fn wrap(self) -> Self::Target {
+        self
+    }
 }
 impl Wrappable for (usize, char) {
     type Target = Self;
-    fn wrap(self) -> Self::Target { self }
+    fn wrap(self) -> Self::Target {
+        self
+    }
 }
 impl Wrappable for u8 {
     type Target = Self;
-    fn wrap(self) -> Self::Target { self }
+    fn wrap(self) -> Self::Target {
+        self
+    }
 }
-
-
-

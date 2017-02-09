@@ -15,7 +15,9 @@ use adapters;
 
 impl<'a> adapters::Wrappable for &'a str {
     type Target = EZString;
-    fn wrap(self) -> Self::Target { EZString::from(self) }
+    fn wrap(self) -> Self::Target {
+        EZString::from(self)
+    }
 }
 
 type WrappedIter<T> = adapters::WrappedIter<Arc<String>, T>;
@@ -39,7 +41,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
     where F: Fn(&'static str) -> T
 {
     // Unsafe invariant: f must not leak input reference or treat it as 'static (it's a fake lifetime)
-    unsafe{adapters::OwnedIter::new(p.to_string(), f)}
+    unsafe { adapters::OwnedIter::new(p.to_string(), f) }
 }
 
 /// An ergonomic, garbage collected string.
@@ -434,20 +436,23 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// assert!(a == "xxx");
 /// assert!(b == "xxxfoo");
 /// ```
-
-
 #[derive(Clone, Default, PartialOrd, Ord, Eq, Hash, Debug)]
 pub struct EZString(Arc<String>);
 impl EZString {
-    fn new(r: Arc<String>) -> Self { EZString(r) }
+    fn new(r: Arc<String>) -> Self {
+        EZString(r)
+    }
     fn from_slice<'a>(&self, s: &'a str) -> Self {
-        if s.as_ptr() == self.as_ptr() && s.len() == self.len() { return self.clone(); }
+        if s.as_ptr() == self.as_ptr() && s.len() == self.len() {
+            return self.clone();
+        }
         Self::from(s)
     }
     fn wrapped_iter<F, T>(&self, f: F) -> WrappedIter<T>
-        where F: Fn(&'static String) -> T {
+        where F: Fn(&'static String) -> T
+    {
         // Unsafe invariant: f must not leak input reference or treat it as 'static (it's a fake lifetime)
-        unsafe{adapters::OwnedIter::new(self.0.clone(), f)}.wrapped()
+        unsafe { adapters::OwnedIter::new(self.0.clone(), f) }.wrapped()
     }
 
     /// Shorthand for clone().
@@ -461,7 +466,9 @@ impl EZString {
     /// let s: EZString = r.c(); // works
     /// //let s: EZString = r.clone(); // doesn't work
     /// ```
-    pub fn c(&self) -> Self { self.clone() }
+    pub fn c(&self) -> Self {
+        self.clone()
+    }
 
     /// Returns whether two strings share the same underlying buffer.
     /// This is similar to the `is` operator in Python.
@@ -478,7 +485,9 @@ impl EZString {
     /// // += is copy on write, so b no longer points to a
     /// assert!(!a.ptr_eq(&b));
     /// ```
-    pub fn ptr_eq(&self, other: &Self) -> bool { self.as_ptr() == other.as_ptr() }
+    pub fn ptr_eq(&self, other: &Self) -> bool {
+        self.as_ptr() == other.as_ptr()
+    }
 
     /// Returns a substring. This creates an independent EZString, which involves
     /// copying the sliced data. Panics if the given bounds are not at a code point
@@ -509,14 +518,19 @@ impl EZString {
     /// // a += &b; // compile error because b borrowed a
     /// ```
     pub fn substr<I>(&self, ind: I) -> Self
-        where String: Index<I, Output=str> {
+        where String: Index<I, Output = str>
+    {
         self.from_slice(self.0.index(ind))
     }
 
     /// Returns a reference to the underlying String.
-    pub fn as_string(&self) -> &String { &*self.0 }
+    pub fn as_string(&self) -> &String {
+        &*self.0
+    }
     /// Returns a copy of the underlying String.
-    pub fn to_string(&self) -> String { (*self.0).clone() }
+    pub fn to_string(&self) -> String {
+        (*self.0).clone()
+    }
 
 
     /// Divide one string into two at an index.
@@ -542,7 +556,9 @@ impl EZString {
     /// It's important to remember that char represents a Unicode Scalar
     /// Value, and may not match your idea of what a 'character' is. Iteration
     /// over grapheme clusters may be what you actually want.
-    pub fn chars(&self) -> Chars { self.wrapped_iter(|s| s.chars()) }
+    pub fn chars(&self) -> Chars {
+        self.wrapped_iter(|s| s.chars())
+    }
     /// Returns an iterator over the chars of a string, and their
     /// positions.
     ///
@@ -552,12 +568,16 @@ impl EZString {
     ///
     /// The iterator yields tuples. The position is first, the char is
     /// second.
-    pub fn char_indices(&self) -> CharIndices { self.wrapped_iter(|s| s.char_indices()) }
+    pub fn char_indices(&self) -> CharIndices {
+        self.wrapped_iter(|s| s.char_indices())
+    }
     /// An iterator over the bytes of a string.
     ///
     /// As a string consists of a sequence of bytes, we can iterate
     /// through a string by byte. This method returns such an iterator.
-    pub fn bytes(&self) -> Bytes { self.wrapped_iter(|s| s.bytes()) }
+    pub fn bytes(&self) -> Bytes {
+        self.wrapped_iter(|s| s.bytes())
+    }
     /// Split a string by whitespace.
     ///
     /// 'Whitespace' is defined according to the terms of the Unicode Derived
@@ -571,7 +591,9 @@ impl EZString {
     /// assert_eq!(s.split_whitespace().collect::<Vec<_>>(),
     ///            vec![ez("Hello,"), ez("world!"), ez("Line"), ez("two.")]);
     /// ```
-    pub fn split_whitespace(&self) -> SplitWhitespace { self.wrapped_iter(|s| s.split_whitespace()) }
+    pub fn split_whitespace(&self) -> SplitWhitespace {
+        self.wrapped_iter(|s| s.split_whitespace())
+    }
     /// An iterator over the lines of a string.
     ///
     /// Lines are ended with either a newline (`\n`) or a carriage return with
@@ -586,7 +608,9 @@ impl EZString {
     /// let s = ez(" Hello,   world!\nLine two. ");
     /// assert_eq!(s.lines().collect::<Vec<_>>(), vec![ez(" Hello,   world!"), ez("Line two. ")]);
     /// ```
-    pub fn lines(&self) -> Lines { self.wrapped_iter(|s| s.lines()) }
+    pub fn lines(&self) -> Lines {
+        self.wrapped_iter(|s| s.lines())
+    }
 
     /// Split a string by substring
     ///
@@ -595,7 +619,9 @@ impl EZString {
     /// let s = ez("aaa-bbb-ccc");
     /// assert_eq!(s.split("-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb"), ez("ccc")]);
     /// ```
-    pub fn split(&self, p: &str) -> Split { self.wrapped_iter(|s| pattern_iter(p, |p| s.split(p))) }
+    pub fn split(&self, p: &str) -> Split {
+        self.wrapped_iter(|s| pattern_iter(p, |p| s.split(p)))
+    }
     /// Split a string by substring and return results in reverse order.
     ///
     /// ```
@@ -604,7 +630,9 @@ impl EZString {
     /// assert_eq!(s.rsplit("-").collect::<Vec<_>>(), vec![ez("ccc"), ez("bbb"), ez("aaa")]);
     /// ```
 
-    pub fn rsplit(&self, p: &str) -> RSplit { self.wrapped_iter(|s| pattern_iter(p, |p| s.rsplit(p))) }
+    pub fn rsplit(&self, p: &str) -> RSplit {
+        self.wrapped_iter(|s| pattern_iter(p, |p| s.rsplit(p)))
+    }
     /// split_terminator() is the same as split() except that
     /// if the final substring is empty, it is skipped. This is useful if the string is
     /// terminated, rather than seperated, by a seperator.
@@ -619,7 +647,9 @@ impl EZString {
     /// assert_eq!(s.split("-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb")]);
     /// assert_eq!(s.split_terminator("-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb")]);
     /// ```
-    pub fn split_terminator(&self, p: &str) -> SplitTerminator { self.wrapped_iter(|s| pattern_iter(p, |p| s.split_terminator(p))) }
+    pub fn split_terminator(&self, p: &str) -> SplitTerminator {
+        self.wrapped_iter(|s| pattern_iter(p, |p| s.split_terminator(p)))
+    }
     /// Same as split_terminator, except it returns the results in reverse order.
     ///
     /// ```
@@ -627,7 +657,9 @@ impl EZString {
     /// let s = ez("aaa-bbb-");
     /// assert_eq!(s.rsplit_terminator("-").collect::<Vec<_>>(), vec![ez("bbb"), ez("aaa")]);
     /// ```
-    pub fn rsplit_terminator(&self, p: &str) -> RSplitTerminator { self.wrapped_iter(|s| pattern_iter(p, |p| s.rsplit_terminator(p))) }
+    pub fn rsplit_terminator(&self, p: &str) -> RSplitTerminator {
+        self.wrapped_iter(|s| pattern_iter(p, |p| s.rsplit_terminator(p)))
+    }
     /// Split a string by substring, up to n-1 times (returning up to n results).
     ///
     /// ```
@@ -635,7 +667,9 @@ impl EZString {
     /// let s = ez("aaa-bbb-ccc");
     /// assert_eq!(s.splitn(2, "-").collect::<Vec<_>>(), vec![ez("aaa"), ez("bbb-ccc")]);
     /// ```
-    pub fn splitn(&self, n: usize, p: &str) -> SplitN { self.wrapped_iter(|s| pattern_iter(p, |p| s.splitn(n, p))) }
+    pub fn splitn(&self, n: usize, p: &str) -> SplitN {
+        self.wrapped_iter(|s| pattern_iter(p, |p| s.splitn(n, p)))
+    }
     /// Split a string by substring starting from the end, up to n-1 times (returning up to n results).
     ///
     /// ```
@@ -643,7 +677,9 @@ impl EZString {
     /// let s = ez("aaa-bbb-ccc");
     /// assert_eq!(s.rsplitn(2, "-").collect::<Vec<_>>(), vec![ez("ccc"), ez("aaa-bbb")]);
     /// ```
-    pub fn rsplitn(&self, n: usize, p: &str) -> RSplitN { self.wrapped_iter(|s| pattern_iter(p, |p| s.rsplitn(n, p))) }
+    pub fn rsplitn(&self, n: usize, p: &str) -> RSplitN {
+        self.wrapped_iter(|s| pattern_iter(p, |p| s.rsplitn(n, p)))
+    }
 
     /// Returns a string with leading and trailing whitespace removed.
     ///
@@ -654,7 +690,9 @@ impl EZString {
     /// # use easy_strings::*;
     /// assert_eq!(ez("  hello \n ").trim(), "hello");
     /// ```
-    pub fn trim(&self) -> Self { self.from_slice(self.0.trim()) }
+    pub fn trim(&self) -> Self {
+        self.from_slice(self.0.trim())
+    }
     /// Returns a string with leading whitespace removed.
     ///
     /// 'Whitespace' is defined according to the terms of the Unicode Derived
@@ -664,7 +702,9 @@ impl EZString {
     /// # use easy_strings::*;
     /// assert_eq!(ez("  hello \n ").trim_left(), "hello \n ");
     /// ```
-    pub fn trim_left(&self) -> Self { self.from_slice(self.0.trim_left()) }
+    pub fn trim_left(&self) -> Self {
+        self.from_slice(self.0.trim_left())
+    }
     /// Returns a string with trailing whitespace removed.
     ///
     /// 'Whitespace' is defined according to the terms of the Unicode Derived
@@ -674,7 +714,9 @@ impl EZString {
     /// # use easy_strings::*;
     /// assert_eq!(ez("  hello \n ").trim_right(), "  hello");
     /// ```
-    pub fn trim_right(&self) -> Self { self.from_slice(self.0.trim_right()) }
+    pub fn trim_right(&self) -> Self {
+        self.from_slice(self.0.trim_right())
+    }
 
     /// Returns a string with all instances of a given character removed from the beginning and end.
     ///
@@ -682,7 +724,9 @@ impl EZString {
     /// # use easy_strings::*;
     /// assert_eq!(ez("  hello   ").trim_matches(' '), "hello");
     /// ```
-    pub fn trim_matches(&self, p: char) -> Self { self.from_slice(self.0.trim_matches(p)) }
+    pub fn trim_matches(&self, p: char) -> Self {
+        self.from_slice(self.0.trim_matches(p))
+    }
     /// Trim matches of a given substring from the beginning of
     /// the string. Note that unlike Python, it does not take a set of characters to trim, but a substring.
     /// Note that this differs from trim_matches(), which takes a char.
@@ -693,7 +737,9 @@ impl EZString {
     /// assert_eq!(s, " x xhello");
     /// assert_eq!(s.trim_left_matches(" x"), "hello");
     /// ```
-    pub fn trim_left_matches(&self, p: &str) -> Self { self.from_slice(self.0.trim_left_matches(p)) }
+    pub fn trim_left_matches(&self, p: &str) -> Self {
+        self.from_slice(self.0.trim_left_matches(p))
+    }
     /// Trim matches of a given substring from the end of
     /// the string. Note that unlike Python, it does not take a set of characters to trim, but a substring.
     /// Note that this differs from trim_matches(), which takes a char.
@@ -704,7 +750,9 @@ impl EZString {
     /// assert_eq!(s, " x xhello");
     /// assert_eq!(s.trim_left_matches(" x"), "hello");
     /// ```
-    pub fn trim_right_matches(&self, p: &str) -> Self { self.from_slice(self.0.trim_right_matches(p)) }
+    pub fn trim_right_matches(&self, p: &str) -> Self {
+        self.from_slice(self.0.trim_right_matches(p))
+    }
 
     /// Replaces all matches of a string with another string.
     ///
@@ -714,7 +762,9 @@ impl EZString {
     /// assert_eq!(s.replace("fish", "bush"), "one bush two bush, old bush, new bush");
     /// assert_eq!(s.replace(&ez("fish"), &ez("bush")), "one bush two bush, old bush, new bush");
     /// ```
-    pub fn replace(&self, from: &str, to: &str) -> Self { Self::from(self.0.replace(from, to)) }
+    pub fn replace(&self, from: &str, to: &str) -> Self {
+        Self::from(self.0.replace(from, to))
+    }
     /// Returns the lowercase equivalent of this string.
     ///
     /// 'Lowercase' is defined according to the terms of the Unicode Derived Core Property
@@ -728,7 +778,9 @@ impl EZString {
     /// let s = ez("ὈΔΥΣΣΕΎΣ");
     /// assert_eq!(s.to_lowercase(), "ὀδυσσεύς");
     /// ```
-    pub fn to_lowercase(&self) -> Self { Self::from(self.0.to_lowercase()) }
+    pub fn to_lowercase(&self) -> Self {
+        Self::from(self.0.to_lowercase())
+    }
     /// Returns the uppercase equivalent of this string.
     ///
     /// 'Uppercase' is defined according to the terms of the Unicode Derived Core Property
@@ -739,7 +791,9 @@ impl EZString {
     /// let s = ez("Hello, World!");
     /// assert_eq!(s.to_uppercase(), "HELLO, WORLD!");
     /// ```
-    pub fn to_uppercase(&self) -> Self { Self::from(self.0.to_uppercase()) }
+    pub fn to_uppercase(&self) -> Self {
+        Self::from(self.0.to_uppercase())
+    }
 
     /// Create a new string by repeating a string `n` times.
     ///
@@ -753,30 +807,54 @@ impl EZString {
             0 => Self::default(),
             1 => self.clone(),
             n => {
-                //TODO: make more efficient?
-                let a = n/2;
-                self.repeat(a) + &self.repeat(n-a)
-            },
+                // TODO: make more efficient?
+                let a = n / 2;
+                self.repeat(a) + &self.repeat(n - a)
+            }
         }
     }
 }
 impl Deref for EZString {
     type Target = String;
-    fn deref(&self) -> &Self::Target { &*self.0 }
+    fn deref(&self) -> &Self::Target {
+        &*self.0
+    }
 }
 impl DerefMut for EZString {
     /// Returns a mutable reference to the underlying string, copying it if necessary.
-    fn deref_mut(&mut self) -> &mut Self::Target { Arc::make_mut(&mut self.0) }
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        Arc::make_mut(&mut self.0)
+    }
 }
-impl Borrow<String> for EZString { fn borrow(&self) -> &String { self.deref() } }
-impl Borrow<str> for EZString { fn borrow(&self) -> &str { self.deref() } }
-impl AsRef<String> for EZString { fn as_ref(&self) -> &String { self.deref() } }
-impl AsRef<str> for EZString { fn as_ref(&self) -> &str { self.deref() } }
+impl Borrow<String> for EZString {
+    fn borrow(&self) -> &String {
+        self.deref()
+    }
+}
+impl Borrow<str> for EZString {
+    fn borrow(&self) -> &str {
+        self.deref()
+    }
+}
+impl AsRef<String> for EZString {
+    fn as_ref(&self) -> &String {
+        self.deref()
+    }
+}
+impl AsRef<str> for EZString {
+    fn as_ref(&self) -> &str {
+        self.deref()
+    }
+}
 impl From<String> for EZString {
-    fn from(s: String) -> Self { Self::new(Arc::new(s)) }
+    fn from(s: String) -> Self {
+        Self::new(Arc::new(s))
+    }
 }
 impl<'a> From<&'a str> for EZString {
-    fn from(s: &'a str) -> Self { Self::from(String::from(s)) }
+    fn from(s: &'a str) -> Self {
+        Self::from(String::from(s))
+    }
 }
 
 
@@ -784,48 +862,70 @@ impl<'a> From<&'a str> for EZString {
 
 impl<'a, 'b> Add<&'a str> for &'b EZString {
     type Output = EZString;
-    fn add(self, other: &str) -> Self::Output { EZString::from(self.to_string() + other) }
+    fn add(self, other: &str) -> Self::Output {
+        EZString::from(self.to_string() + other)
+    }
 }
 impl<'a, 'b, 'c> Add<&'a str> for &'c &'b EZString {
     type Output = EZString;
-    fn add(self, other: &str) -> Self::Output { *self + other }
+    fn add(self, other: &str) -> Self::Output {
+        *self + other
+    }
 }
 
 impl<'a, 'b> Add<&'a EZString> for &'b String {
     type Output = EZString;
-    fn add(self, other: &EZString) -> Self::Output { EZString::from(self.clone()) + other }
+    fn add(self, other: &EZString) -> Self::Output {
+        EZString::from(self.clone()) + other
+    }
 }
 impl<'a, 'b, 'c> Add<&'a EZString> for &'c &'b String {
     type Output = EZString;
-    fn add(self, other: &EZString) -> Self::Output { *self + other }
+    fn add(self, other: &EZString) -> Self::Output {
+        *self + other
+    }
 }
 impl<'a, 'b, 'c> Add<&'a EZString> for &'c &'b str {
     type Output = EZString;
-    fn add(self, other: &EZString) -> Self::Output { EZString::from(*self) + other }
+    fn add(self, other: &EZString) -> Self::Output {
+        EZString::from(*self) + other
+    }
 }
 
 impl<'a> Add<&'a str> for EZString {
     type Output = EZString;
-    fn add(mut self, other: &str) -> Self::Output { self += other; self }
+    fn add(mut self, other: &str) -> Self::Output {
+        self += other;
+        self
+    }
 }
 
 impl<'a, T: AsRef<str> + ?Sized> AddAssign<&'a T> for EZString {
-    fn add_assign(&mut self, other: &T) { *self.deref_mut() += &other.as_ref(); }
+    fn add_assign(&mut self, other: &T) {
+        *self.deref_mut() += &other.as_ref();
+    }
 }
 impl AddAssign<EZString> for EZString {
-    fn add_assign(&mut self, other: EZString) { *self.deref_mut() += &other; }
+    fn add_assign(&mut self, other: EZString) {
+        *self.deref_mut() += &other;
+    }
 }
 
 
 
 // Should be Borrow instead of AsRef, but Rust won't allow it
 impl<T: AsRef<str> + ?Sized> PartialEq<T> for EZString {
-    fn eq(&self, other: &T) -> bool { *self.0 == other.as_ref() }
+    fn eq(&self, other: &T) -> bool {
+        *self.0 == other.as_ref()
+    }
 }
 impl<'a> PartialEq<EZString> for &'a EZString {
-    fn eq(&self, other: &EZString) -> bool { *self == other }
+    fn eq(&self, other: &EZString) -> bool {
+        *self == other
+    }
 }
 impl<'a> PartialEq<String> for &'a EZString {
-    fn eq(&self, other: &String) -> bool { *self == other }
+    fn eq(&self, other: &String) -> bool {
+        *self == other
+    }
 }
-

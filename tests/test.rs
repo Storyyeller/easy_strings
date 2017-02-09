@@ -186,7 +186,7 @@ fn slicing() {
     assert!(s.substr(1..) == "123456789");
     assert!(s.substr(1..4) == "123");
     assert!(s.substr(..4) == "0123");
-    assert!(s.substr(..s.len()-2) == "01234567");
+    assert!(s.substr(..s.len() - 2) == "01234567");
 
     let s2 = s.substr(3..);
     assert!(s2.substr(..3) == "345");
@@ -255,8 +255,10 @@ fn rsplit() {
     assert_eq!(s.split_terminator(&p).next().unwrap(), "0");
     assert_eq!(s.rsplit_terminator(&p).next().unwrap(), "3");
 
-    assert_eq!(s.splitn(3, &p).collect::<Vec<_>>(), vec![ez("0"), ez("1"), ez("2-3-")]);
-    assert_eq!(s.rsplitn(3, &p).collect::<Vec<_>>(), vec![ez(""), ez("3"), ez("0-1-2")]);
+    assert_eq!(s.splitn(3, &p).collect::<Vec<_>>(),
+               vec![ez("0"), ez("1"), ez("2-3-")]);
+    assert_eq!(s.rsplitn(3, &p).collect::<Vec<_>>(),
+               vec![ez(""), ez("3"), ez("0-1-2")]);
 }
 
 #[test]
@@ -355,7 +357,7 @@ fn split<'a, P: Into<Option<&'a str>>>(s: &EZString, sep: P) -> Vec<EZString> {
         None => s.split_whitespace().collect(),
     }
 }
-fn split2<'a, P: Into<Option<&'a str>>>(s: &EZString, sep: P) -> Box<Iterator<Item=EZString>> {
+fn split2<'a, P: Into<Option<&'a str>>>(s: &EZString, sep: P) -> Box<Iterator<Item = EZString>> {
     match sep.into() {
         Some(sep) => Box::new(s.split(sep)),
         None => Box::new(s.split_whitespace()),
@@ -364,7 +366,7 @@ fn split2<'a, P: Into<Option<&'a str>>>(s: &EZString, sep: P) -> Box<Iterator<It
 #[test]
 fn python_split_func() {
     let s = ez("x  x-x 77x");
-    assert_eq!(split(&s, "x"), vec![ez(""), ez("  "), ez("-"), ez(" 77"), ez("")]);
+    assert_eq!(split(&s, "x"),
+               vec![ez(""), ez("  "), ez("-"), ez(" 77"), ez("")]);
     assert_eq!(split(&s, None), vec![ez("x"), ez("x-x"), ez("77x")]);
 }
-
