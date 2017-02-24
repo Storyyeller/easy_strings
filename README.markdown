@@ -1,7 +1,7 @@
 Ergonomic, garbage collected strings for Rust.
 
 EZString is similar to the strings in high level languages such as
-Python and Java. It is designed to as easy to use as possible by always returning owned values,
+Python and Java. It is designed to be as easy to use as possible by always returning owned values,
 using reference counting and copy-on-write under the hood in order to make this efficient.
 
 # Getting Started
