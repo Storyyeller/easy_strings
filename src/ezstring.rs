@@ -825,15 +825,7 @@ impl EZString {
     /// assert_eq!(s.repeat(3), "Hello, World!Hello, World!Hello, World!");
     /// ```
     pub fn repeat(&self, n: usize) -> Self {
-        match n {
-            0 => Self::default(),
-            1 => self.clone(),
-            n => {
-                // TODO: make more efficient?
-                let a = n / 2;
-                self.repeat(a) + &self.repeat(n - a)
-            }
-        }
+        if n == 1 { self.clone() } else { Self::from(self.0.repeat(n)) }
     }
 }
 impl Deref for EZString {
