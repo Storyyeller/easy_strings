@@ -397,7 +397,7 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// assert_eq!(s.replace("fish", "bush"), "one bush two bush, old bush, new bush");
 /// assert_eq!(s.replace(&ez("fish"), &ez("bush")), "one bush two bush, old bush, new bush");
 /// ```
-/// You can also replace a the first n occurences of a substring via .replacen()
+/// You can also replace the first n occurences of a substring via .replacen()
 ///
 /// ```rust
 /// # use easy_strings::*;
