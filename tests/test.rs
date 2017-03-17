@@ -369,4 +369,5 @@ fn python_split_func() {
     assert_eq!(split(&s, "x"),
                vec![ez(""), ez("  "), ez("-"), ez(" 77"), ez("")]);
     assert_eq!(split(&s, None), vec![ez("x"), ez("x-x"), ez("77x")]);
+    assert_eq!(split2(&s, None).collect::<Vec<_>>(), vec![ez("x"), ez("x-x"), ez("77x")]);
 }
