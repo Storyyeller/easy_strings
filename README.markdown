@@ -10,7 +10,7 @@ Add the following dependency to your Cargo manifest.
 
 ```toml
 [dependencies]
-easy_strings = "0.1"
+easy_strings = "0.2"
 ```
 
 Then import it in your code.
