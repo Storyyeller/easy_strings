@@ -331,6 +331,14 @@ let s = ez("one fish two fish, old fish, new fish");
 assert_eq!(s.replace("fish", "bush"), "one bush two bush, old bush, new bush");
 assert_eq!(s.replace(&ez("fish"), &ez("bush")), "one bush two bush, old bush, new bush");
 ```
+You can also replace a the first n occurences of a substring via .replacen()
+
+```rust
+# use easy_strings::*;
+let s = ez("one fish two fish, old fish, new fish");
+assert_eq!(s.replacen("fish", "bush", 3), "one bush two bush, old bush, new fish");
+assert_eq!(s.replacen(&ez("fish"), &ez("bush"), 2), "one bush two bush, old fish, new fish");
+```
 # Other methods
 to_lowercase(), to_uppercase(), and repeat() are pretty much self explanatory.
 

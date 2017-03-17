@@ -397,6 +397,14 @@ fn pattern_iter<F, T>(p: &str, f: F) -> adapters::OwnedIter<String, T>
 /// assert_eq!(s.replace("fish", "bush"), "one bush two bush, old bush, new bush");
 /// assert_eq!(s.replace(&ez("fish"), &ez("bush")), "one bush two bush, old bush, new bush");
 /// ```
+/// You can also replace a the first n occurences of a substring via .replacen()
+///
+/// ```rust
+/// # use easy_strings::*;
+/// let s = ez("one fish two fish, old fish, new fish");
+/// assert_eq!(s.replacen("fish", "bush", 3), "one bush two bush, old bush, new fish");
+/// assert_eq!(s.replacen(&ez("fish"), &ez("bush"), 2), "one bush two bush, old fish, new fish");
+/// ```
 /// # Other methods
 /// to_lowercase(), to_uppercase(), and repeat() are pretty much self explanatory.
 ///
@@ -765,6 +773,20 @@ impl EZString {
     pub fn replace(&self, from: &str, to: &str) -> Self {
         Self::from(self.0.replace(from, to))
     }
+
+    /// Replaces the first n matches of a string with another string.
+    ///
+    /// ```
+    /// # use easy_strings::*;
+    /// let s = ez("one fish two fish, old fish, new fish");
+    /// assert_eq!(s.replacen("fish", "bush", 3), "one bush two bush, old bush, new fish");
+    /// assert_eq!(s.replacen(&ez("fish"), &ez("bush"), 2), "one bush two bush, old fish, new fish");
+    /// ```
+    pub fn replacen(&self, from: &str, to: &str, count: usize) -> Self {
+        Self::from(self.0.replacen(from, to, count))
+    }
+
+
     /// Returns the lowercase equivalent of this string.
     ///
     /// 'Lowercase' is defined according to the terms of the Unicode Derived Core Property
