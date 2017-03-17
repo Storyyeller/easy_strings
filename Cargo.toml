@@ -1,16 +1,14 @@
 [package]
-name = "easy_strings"
-version = "0.1.0"
-documentation = "https://docs.rs/easy_strings/0.1.0/easy_strings/"
 authors = ["Robert Grosse <n210241048576@gmail.com>"]
-description = "Ergonomic, garbage collected strings for Rust"
-repository = "https://github.com/Storyyeller/easy_strings"
-readme = "README.markdown"
 categories = ["data-structures"]
+description = "Ergonomic, garbage collected strings for Rust"
+documentation = "https://docs.rs/easy_strings/0.1.0/easy_strings/"
 license = "Apache-2.0/MIT"
-
+name = "easy_strings"
+readme = "README.markdown"
+repository = "https://github.com/Storyyeller/easy_strings"
+version = "0.1.0"
 
 [dependencies]
-lazy_static = "0.1.*"
-owning_ref = "0.2.4"
-
+lazy_static = "0.2.4"
+owning_ref = "0.3.3"

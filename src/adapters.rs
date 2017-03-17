@@ -29,7 +29,7 @@ impl<S: StableAddress + 'static, T> OwnedIter<S, T> {
     pub unsafe fn new<F>(o: S, f: F) -> Self
         where F: Fn(&'static S::Target) -> T
     {
-        OwnedIter(OwningHandle::new(o, |ptr| DerefNewtype(f(&*ptr))))
+        OwnedIter(OwningHandle::new_with_fn(o, |ptr| DerefNewtype(f(&*ptr))))
     }
 
     pub fn wrapped(self) -> WrappedIter<S, T> {
